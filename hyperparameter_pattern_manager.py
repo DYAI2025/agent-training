@@ -25,7 +25,11 @@ class HyperparameterPatternManager:
         """Load patterns from file"""
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
-                return json.load(f)
+                data = json.load(f)
+                # Handle case where file contains string instead of list
+                if isinstance(data, str):
+                    return []
+                return data if isinstance(data, list) else []
         return []
     
     def _save_patterns(self, patterns: List[Dict[str, Any]], file_path: str):
@@ -122,13 +126,14 @@ class HyperparameterPatternManager:
         
         # Check against anti-patterns
         for anti_pattern in self.anti_patterns:
-            if self._parameters_match(current_parameters, anti_pattern["parameters"]):
-                suggestions.append(f"⚠️ AVOID: {anti_pattern['mitigation']}")
+            if isinstance(anti_pattern, dict) and "parameters" in anti_pattern:
+                if self._parameters_match(current_parameters, anti_pattern["parameters"]):
+                    suggestions.append(f"⚠️ AVOID: {anti_pattern.get('mitigation', 'Review configuration')}")
         
         # Check success patterns for improvements
         for success_pattern in self.success_patterns:
-            if success_pattern.get("quality_score", 0) > 0.8:
-                for param, value in success_pattern["parameters"].items():
+            if isinstance(success_pattern, dict) and success_pattern.get("quality_score", 0) > 0.8:
+                for param, value in success_pattern.get("parameters", {}).items():
                     if param in current_parameters:
                         if current_parameters[param] != value:
                             suggestions.append(

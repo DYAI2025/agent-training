@@ -82,26 +82,32 @@ class AutoresearchWuphfBridge:
             # Calculate quality score based on metrics
             quality_score = self._calculate_quality_score(result)
             
-            # Complete the task with self-reflection
-            assessment = self.learning_system.complete_task(
-                success=result.get("status") == "success",
-                context={
-                    "experiment_id": experiment_id,
-                    "val_bpb": result.get("val_bpb"),
-                    "memory_gb": result.get("peak_vram_mb", 0) / 1024,
-                    "training_time": result.get("training_seconds", 0),
-                    "quality_score": quality_score
+            # Try to use WUPHF learning system if available
+            if hasattr(self.learning_system, 'complete_task'):
+                assessment = self.learning_system.complete_task(
+                    success=result.get("status") == "success",
+                    context={
+                        "experiment_id": experiment_id,
+                        "val_bpb": result.get("val_bpb"),
+                        "memory_gb": result.get("peak_vram_mb", 0) / 1024,
+                        "training_time": result.get("training_seconds", 0),
+                        "quality_score": quality_score
+                    }
+                )
+                return {
+                    "quality_score": quality_score,
+                    "assessment": assessment,
+                    "status": "logged"
                 }
-            )
-            
-            return {
-                "quality_score": quality_score,
-                "assessment": assessment,
-                "status": "logged"
-            }
+            else:
+                # Fallback: just calculate quality score
+                return {
+                    "quality_score": quality_score,
+                    "status": "logged_fallback"
+                }
         except Exception as e:
             print(f"Error logging to WUPHF: {e}")
-            return {"quality_score": 0.5, "status": "error", "error": str(e)}
+            return {"quality_score": self._calculate_quality_score(result), "status": "error", "error": str(e)}
     
     def _calculate_quality_score(self, result: Dict[str, Any]) -> float:
         """Calculate quality score from experiment metrics"""
@@ -155,12 +161,14 @@ class AutoresearchWuphfBridge:
             
             if result.get("status") == "success":
                 pattern = self.pattern_manager.create_success_pattern(experiment_data, experiment_id)
-                self.pattern_manager.save_success_pattern(pattern)
+                self.pattern_manager.success_patterns.append(pattern)
+                self.pattern_manager._save_patterns(self.pattern_manager.success_patterns, self.pattern_manager.success_patterns_file)
                 print(f"✓ Success pattern learned from {experiment_id}")
             else:
                 experiment_data["error"] = result.get("error", "Unknown error")
                 pattern = self.pattern_manager.create_anti_pattern(experiment_data, experiment_id)
-                self.pattern_manager.save_anti_pattern(pattern)
+                self.pattern_manager.anti_patterns.append(pattern)
+                self.pattern_manager._save_patterns(self.pattern_manager.anti_patterns, self.pattern_manager.anti_patterns_file)
                 print(f"✓ Anti-pattern learned from {experiment_id}")
         except Exception as e:
             print(f"Error learning from experiment: {e}")
