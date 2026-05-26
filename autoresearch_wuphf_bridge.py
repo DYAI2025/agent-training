@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 # Add WUPHF providers to path
@@ -16,6 +16,7 @@ except ImportError:
     print("Warning: WUPHF Learning System not available, running in standalone mode")
 
 from model_knowledge_manager import ModelKnowledgeManager
+from hyperparameter_pattern_manager import HyperparameterPatternManager
 
 
 class AutoresearchWuphfBridge:
@@ -27,6 +28,7 @@ class AutoresearchWuphfBridge:
         self.learning_system = None
         self.knowledge_manager = None
         self.model_manager = None
+        self.pattern_manager = None
         
         if WUPHF_AVAILABLE:
             try:
@@ -34,6 +36,9 @@ class AutoresearchWuphfBridge:
                 self.knowledge_manager = getattr(self.learning_system, 'knowledge_manager', None)
                 self.model_manager = ModelKnowledgeManager(
                     knowledge_base_path=self.config.get("knowledge_base_path")
+                )
+                self.pattern_manager = HyperparameterPatternManager(
+                    patterns_path=self.config.get("patterns_path")
                 )
                 print("✓ WUPHF Learning System connected")
             except Exception as e:
@@ -135,3 +140,34 @@ class AutoresearchWuphfBridge:
         except Exception as e:
             print(f"Error saving model checkpoint: {e}")
             return None
+    
+    def learn_from_experiment(self, experiment_id: str, result: Dict[str, Any], parameters: Dict[str, Any]):
+        """Learn from experiment result using pattern library"""
+        if not self.pattern_manager or not self.config.get("enable_pattern_learning", True):
+            return
+        
+        try:
+            experiment_data = {
+                "val_bpb": result.get("val_bpb"),
+                "parameters": parameters,
+                "quality_score": result.get("quality_score", 0.5)
+            }
+            
+            if result.get("status") == "success":
+                pattern = self.pattern_manager.create_success_pattern(experiment_data, experiment_id)
+                self.pattern_manager.save_success_pattern(pattern)
+                print(f"✓ Success pattern learned from {experiment_id}")
+            else:
+                experiment_data["error"] = result.get("error", "Unknown error")
+                pattern = self.pattern_manager.create_anti_pattern(experiment_data, experiment_id)
+                self.pattern_manager.save_anti_pattern(pattern)
+                print(f"✓ Anti-pattern learned from {experiment_id}")
+        except Exception as e:
+            print(f"Error learning from experiment: {e}")
+    
+    def get_optimization_suggestions(self, current_parameters: Dict[str, Any]) -> List[str]:
+        """Get hyperparameter optimization suggestions"""
+        if not self.pattern_manager:
+            return []
+        
+        return self.pattern_manager.get_optimization_suggestions(current_parameters)
