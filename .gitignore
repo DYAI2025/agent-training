@@ -21,3 +21,23 @@ dev/
 
 # Results file
 results.tsv
+
+# Additional Python cache files
+*.py[cod]
+*.class
+*.so
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
