@@ -49,6 +49,17 @@ Hi have a look at program.md and let's kick off a new experiment! let's do the s
 
 The `program.md` file is essentially a super lightweight "skill".
 
+## WUPHF Learning System Integration
+
+autoresearch can be integrated with the WUPHF Learning System for enhanced autonomous learning capabilities. This enables:
+
+- **Pattern Learning**: Automatic learning of successful and unsuccessful hyperparameter combinations
+- **Knowledge Base**: Storage and retrieval of model checkpoints
+- **Quality Gates**: Automatic quality assessment of experiments
+- **Optimization Suggestions**: Data-driven recommendations for future experiments
+
+See [README_WUPHF_INTEGRATION.md](README_WUPHF_INTEGRATION.md) for details and [program_wuphf_enhanced.md](program_wuphf_enhanced.md) for the enhanced agent instructions.
+
 ## Project structure
 
 ```
