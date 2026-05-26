@@ -1,6 +1,11 @@
 import pytest
 import json
 import os
+import sys
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from autoresearch_wuphf_bridge import AutoresearchWuphfBridge, WUPHF_AVAILABLE
 
 def test_bridge_initialization():

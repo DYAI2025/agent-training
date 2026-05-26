@@ -1,8 +1,13 @@
 import pytest
 import json
 import os
+import sys
 import tempfile
 import shutil
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from model_knowledge_manager import ModelKnowledgeManager
 
 def test_model_metadata_creation():
