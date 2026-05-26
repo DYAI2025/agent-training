@@ -15,6 +15,8 @@ except ImportError:
     WUPHF_AVAILABLE = False
     print("Warning: WUPHF Learning System not available, running in standalone mode")
 
+from model_knowledge_manager import ModelKnowledgeManager
+
 
 class AutoresearchWuphfBridge:
     """Bridge between autoresearch experiments and WUPHF learning system"""
@@ -24,11 +26,15 @@ class AutoresearchWuphfBridge:
         self.config = self._load_config(config_path)
         self.learning_system = None
         self.knowledge_manager = None
+        self.model_manager = None
         
         if WUPHF_AVAILABLE:
             try:
                 self.learning_system = get_learning_system()
                 self.knowledge_manager = getattr(self.learning_system, 'knowledge_manager', None)
+                self.model_manager = ModelKnowledgeManager(
+                    knowledge_base_path=self.config.get("knowledge_base_path")
+                )
                 print("✓ WUPHF Learning System connected")
             except Exception as e:
                 print(f"Warning: Could not initialize WUPHF Learning System: {e}")
@@ -115,3 +121,17 @@ class AutoresearchWuphfBridge:
         )
         
         return max(0.0, min(1.0, quality_score))
+    
+    def save_model_checkpoint(self, experiment_id: str, model_metadata: Dict[str, Any]) -> str:
+        """Save model checkpoint metadata to knowledge base"""
+        if not self.model_manager:
+            print("Warning: Model manager not available")
+            return None
+        
+        try:
+            entry_id = self.model_manager.save_model_metadata(model_metadata)
+            print(f"✓ Model checkpoint saved: {entry_id}")
+            return entry_id
+        except Exception as e:
+            print(f"Error saving model checkpoint: {e}")
+            return None
