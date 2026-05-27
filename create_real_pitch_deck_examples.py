@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+"""
+Erstellung neuer Beispiele basierend auf echten Pitch-Deck-Strukturen
+Airbnb, Uber, Coinbase, LinkedIn, Square, Shopify, etc.
+"""
+
+import json
+from pathlib import Path
+
+# Output Pfad
+output_path = Path("/home/dyai/Dokumente/Pers.Tests-Page/social-role/DYAI_home/DEV/AI_LLM/autoreserarch/autoresearch/wuphf_real_pitch_deck_examples.jsonl")
+
+# Echte Pitch-Deck Struktur-Beispiele
+real_pitch_examples = []
+
+# Airbnb-Struktur (Einfachheit, "Price is an important concern for travelers")
+airbnb_structure_examples = [
+    {
+        "role": "content",
+        "slide_type": "intro",
+        "industry": "ai_ml",
+        "source": "Airbnb Seed Deck Structure",
+        "input": "Erstelle Intro-Slide für AI-Startup (Airbnb-Prinzip: Einfachheit, Vision in einem Satz)",
+        "output": "AutoML for Everyone: No-Code AI Platform that makes machine learning accessible to every business, regardless of technical expertise.",
+        "enhancement_type": "airbnb_simplicity",
+        "structure_source": "Airbnb Seed 2008"
+    },
+    {
+        "role": "content",
+        "slide_type": "problem",
+        "industry": "ai_ml",
+        "source": "Airbnb Seed Deck Structure",
+        "input": "Erstelle Problem-Slide für AI-Startup (Airbnb-Prinzip: 'Price is an important concern for travelers' - einfache, greifbare Problembeschreibung)",
+        "output": "Problem: Building AI models is expensive and complex. Companies spend €500K+ on ML teams. 70% of AI projects fail at deployment. Small businesses cannot afford AI expertise.",
+        "enhancement_type": "airbnb_simplicity",
+        "structure_source": "Airbnb Seed 2008"
+    },
+    {
+        "role": "content",
+        "slide_type": "solution",
+        "industry": "ai_ml",
+        "source": "Airbnb Seed Deck Structure",
+        "input": "Erstelle Solution-Slide für AI-Startup (Airbnb-Prinzip: Lösung so simpel wie 'Zimmer bei Einheimischen buchen')",
+        "output": "Solution: Upload your data, click train, deploy AI models in minutes. No coding required. 10x faster than traditional ML. 80% cost reduction.",
+        "enhancement_type": "airbnb_simplicity",
+        "structure_source": "Airbnb Seed 2008"
+    }
+]
+
+# Uber-Struktur (Ineffizienz des aktuellen Systems)
+uber_structure_examples = [
+    {
+        "role": "content",
+        "slide_type": "problem",
+        "industry": "developer_tools",
+        "source": "Uber Seed Deck Structure",
+        "input": "Erstelle Problem-Slide für DevOps-Startup (Uber-Prinzip: Ineffizienz des aktuellen Systems - Taxis vs. Uber)",
+        "output": "Problem: Software deployment is broken. Manual processes take weeks. 40% of deployments fail. Teams spend 60% of time on infrastructure instead of building features. Current tools are complex and fragmented.",
+        "enhancement_type": "uber_inefficiency",
+        "structure_source": "Uber Seed 2010"
+    },
+    {
+        "role": "content",
+        "slide_type": "solution",
+        "industry": "developer_tools",
+        "source": "Uber Seed Deck Structure",
+        "input": "Erstelle Solution-Slide für DevOps-Startup (Uber-Prinzip: Technologie ersetzt kaputte Infrastruktur)",
+        "output": "Solution: One-click deployment platform. Automate infrastructure management. Replace manual processes with AI-powered DevOps. Deploy in minutes, not weeks. 90% reduction in deployment failures.",
+        "enhancement_type": "uber_inefficiency",
+        "structure_source": "Uber Seed 2010"
+    },
+    {
+        "role": "content",
+        "slide_type": "traction",
+        "industry": "developer_tools",
+        "source": "Uber Seed Deck Structure",
+        "input": "Erstelle Traction-Slide für DevOps-Startup (Uber-Prinzip: Wachstum durch Netzwerkeffekt und Marktdominanz)",
+        "output": "Traction: 18 months since launch. 500+ companies using platform. 1M+ deployments automated. 95% customer satisfaction. Revenue €500K MRR, +50% QoQ. 10 enterprise partnerships. Next: 2,000 companies, €2M MRR.",
+        "enhancement_type": "uber_inefficiency",
+        "structure_source": "Uber Seed 2010"
+    }
+]
+
+# Coinbase-Struktur (Komplexes Thema als logische Evolution)
+coinbase_structure_examples = [
+    {
+        "role": "content",
+        "slide_type": "intro",
+        "industry": "data_analytics",
+        "source": "Coinbase Seed Deck Structure",
+        "input": "Erstelle Intro-Slide für Real-time Analytics (Coinbase-Prinzip: Komplexes Thema als logische Evolution)",
+        "output": "Real-time Analytics: The natural evolution of data processing from batch to streaming, enabling instant insights for modern businesses.",
+        "enhancement_type": "coinbase_evolution",
+        "structure_source": "Coinbase Seed 2012"
+    },
+    {
+        "role": "content",
+        "slide_type": "solution",
+        "industry": "data_analytics",
+        "source": "Coinbase Seed Deck Structure",
+        "input": "Erstelle Solution-Slide für Real-time Analytics (Coinbase-Prinzip: 3 einfache Vorteile - einfach, international, kostenlos)",
+        "output": "Solution: Real-time analytics with 3 advantages: 1) Simple - setup in 10 minutes, 2) Global - process data anywhere, 3) Free tier - up to 1M events/month. No technical jargon.",
+        "enhancement_type": "coinbase_evolution",
+        "structure_source": "Coinbase Seed 2012"
+    },
+    {
+        "role": "content",
+        "slide_type": "market",
+        "industry": "data_analytics",
+        "source": "Coinbase Seed Deck Structure",
+        "input": "Erstelle Market-Slide für Real-time Analytics (Coinbase-Prinzip: Evolution des Marktes - Batch → Streaming)",
+        "output": "Market: Evolution from batch processing (€10B) to real-time analytics (€50B by 2028). Every company becoming real-time. We're the infrastructure layer for this evolution. TAM €50B, SAM €10B, SOM €1B.",
+        "enhancement_type": "coinbase_evolution",
+        "structure_source": "Coinbase Seed 2012"
+    }
+]
+
+# LinkedIn-Struktur (Netzwerkeffekt + Transformation)
+linkedin_structure_examples = [
+    {
+        "role": "content",
+        "slide_type": "problem",
+        "industry": "ai_saas",
+        "source": "LinkedIn Series B Structure",
+        "input": "Erstelle Problem-Slide für AI CRM (LinkedIn-Prinzip: Transformation von statisch zu dynamisch)",
+        "output": "Problem: CRM systems are static databases. Sales teams work with outdated information. Customer relationships are transactional, not relational. 60% of sales time wasted on bad data. No network effects in current systems.",
+        "enhancement_type": "linkedin_transformation",
+        "structure_source": "LinkedIn Series B 2004"
+    },
+    {
+        "role": "content",
+        "slide_type": "solution",
+        "industry": "ai_saas",
+        "source": "LinkedIn Series B Structure",
+        "input": "Erstelle Solution-Slide für AI CRM (LinkedIn-Prinzip: Netzwerkeffekt + vertrauensbasierte Transaktionen)",
+        "output": "Solution: AI-powered CRM that transforms static data into dynamic relationships. Network effect: more users = smarter AI = better insights. Trust-based transactions through AI verification. From database to relationship engine.",
+        "enhancement_type": "linkedin_transformation",
+        "structure_source": "LinkedIn Series B 2004"
+    },
+    {
+        "role": "content",
+        "slide_type": "traction",
+        "industry": "ai_saas",
+        "source": "LinkedIn Series B Structure",
+        "input": "Erstelle Traction-Slide für AI CRM (LinkedIn-Prinzip: Netzwerkeffekt-Metriken)",
+        "output": "Traction: 24 months since launch. 100K+ professionals on platform. Network effect: 40% growth through viral invitations. 50M+ relationship connections made. Revenue €300K MRR, +60% QoQ through network effects.",
+        "enhancement_type": "linkedin_transformation",
+        "structure_source": "LinkedIn Series B 2004"
+    }
+]
+
+# Square-Struktur (Eleganz in der Komplexität)
+square_structure_examples = [
+    {
+        "role": "content",
+        "slide_type": "product",
+        "industry": "fintech",
+        "source": "Square Seed Deck Structure",
+        "input": "Erstelle Product-Slide für AI Payments (Square-Prinzip: Eleganz in der Komplexität - einfaches Interface für komplexe Prozesse)",
+        "output": "Product: AI-powered payment processing with elegant simplicity. Complex financial infrastructure hidden behind beautiful interface. One tap to accept payments. AI fraud detection invisible to user. Enterprise-grade security with consumer-grade experience.",
+        "enhancement_type": "square_elegance",
+        "structure_source": "Square Seed 2009"
+    },
+    {
+        "role": "content",
+        "slide_type": "business_model",
+        "industry": "fintech",
+        "source": "Square Seed Deck Structure",
+        "input": "Erstelle Business Model-Slide für AI Payments (Square-Prinzip: Transparente, einfache Pricing-Struktur)",
+        "output": "Business Model: 2.9% per transaction. No hidden fees. No monthly minimums. Simple, transparent pricing. Revenue scales directly with merchant success. Unit economics: 80% gross margin, LTV €2K, CAC €200.",
+        "enhancement_type": "square_elegance",
+        "structure_source": "Square Seed 2009"
+    }
+]
+
+# Shopify-Struktur (Demokratisierung)
+shopify_structure_examples = [
+    {
+        "role": "content",
+        "slide_type": "intro",
+        "industry": "ai_saas",
+        "source": "Shopify Series A Structure",
+        "input": "Erstelle Intro-Slide für AI E-Commerce (Shopify-Prinzip: Demokratisierung - 'E-commerce für jeden')",
+        "output": "AI E-commerce for Everyone: Democratizing online retail with AI-powered stores that anyone can launch in minutes, not months.",
+        "enhancement_type": "shopify_democratization",
+        "structure_source": "Shopify Series A 2011"
+    },
+    {
+        "role": "content",
+        "slide_type": "market",
+        "industry": "ai_saas",
+        "source": "Shopify Series A Structure",
+        "input": "Erstelle Market-Slide für AI E-Commerce (Shopify-Prinzip: Demokratisierung des Marktes - von Enterprise zu SMB)",
+        "output": "Market: E-commerce democratization from enterprise to SMB. 10M small businesses globally need online presence. TAM €100B, SAM €20B (SMBs), SOM €2B (AI-powered). We're bringing enterprise-level AI to small businesses.",
+        "enhancement_type": "shopify_democratization",
+        "structure_source": "Shopify Series A 2011"
+    }
+]
+
+# Alle Beispiele sammeln
+real_pitch_examples.extend(airbnb_structure_examples)
+real_pitch_examples.extend(uber_structure_examples)
+real_pitch_examples.extend(coinbase_structure_examples)
+real_pitch_examples.extend(linkedin_structure_examples)
+real_pitch_examples.extend(square_structure_examples)
+real_pitch_examples.extend(shopify_structure_examples)
+
+# Speichern
+with open(output_path, 'w', encoding='utf-8') as f:
+    for example in real_pitch_examples:
+        f.write(json.dumps(example, ensure_ascii=False) + '\n')
+
+print(f"✅ Echte Pitch-Deck Struktur-Beispiele erstellt: {output_path}")
+print(f"📊 Statistiken:")
+print(f"   - Gesamt Beispiele: {len(real_pitch_examples)}")
+print(f"   - Airbnb-Struktur: {len(airbnb_structure_examples)}")
+print(f"   - Uber-Struktur: {len(uber_structure_examples)}")
+print(f"   - Coinbase-Struktur: {len(coinbase_structure_examples)}")
+print(f"   - LinkedIn-Struktur: {len(linkedin_structure_examples)}")
+print(f"   - Square-Struktur: {len(square_structure_examples)}")
+print(f"   - Shopify-Struktur: {len(shopify_structure_examples)}")
+
+print(f"\n🎯 Integrierte Struktur-Prinzipien:")
+print(f"   - Airbnb: Einfachheit, Vision in einem Satz")
+print(f"   - Uber: Ineffizienz des aktuellen Systems")
+print(f"   - Coinbase: Komplexes Thema als logische Evolution")
+print(f"   - LinkedIn: Netzwerkeffekt + Transformation")
+print(f"   - Square: Eleganz in der Komplexität")
+print(f"   - Shopify: Demokratisierung")
+
+print(f"\n📋 Nächste Schritte:")
+print(f"   1. Echte Pitch-Deck Beispiele mit Ultimate Dataset mergen")
+print(f"   2. Berliner VC-Szene Beispiele erstellen")
+print(f"   3. 2026 Benchmark Beispiele erstellen")
+print(f"   4. Validierung der erweiterten Trainingsdaten")
