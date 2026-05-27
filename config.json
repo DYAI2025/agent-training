@@ -1,0 +1,78 @@
+{
+  "agent_network": {
+    "name": "WUPHF Agile Agent Network",
+    "version": "1.0.0",
+    "description": "Multi-agent orchestration system for AI-powered workflows"
+  },
+  "ceo_agent": {
+    "name": "CEO/Orchestrator Agent",
+    "class": "CEOOrchestratorAgent",
+    "module": "agents.ceo_orchestrator_agent",
+    "model": "nvidia/nemotron-120b",
+    "api_provider": "openrouter",
+    "api_url": "https://openrouter.ai/api/v1/chat/completions",
+    "parameters": {
+      "temperature": 0.3,
+      "max_tokens": 1000
+    },
+    "capabilities": [
+      "customer_request_analysis",
+      "task_delegation",
+      "true_north_qa_evaluation",
+      "learning_integration",
+      "strategic_planning"
+    ],
+    "environment_variables": {
+      "openrouter_api_key": "OPENROUTER_API_KEY"
+    }
+  },
+  "specialized_agents": {
+    "research_agent": {
+      "name": "Research Agent",
+      "status": "pending_implementation"
+    },
+    "development_agent": {
+      "name": "Development Agent",
+      "status": "pending_implementation"
+    },
+    "qa_agent": {
+      "name": "QA Agent",
+      "status": "pending_implementation"
+    },
+    "analyst_agent": {
+      "name": "Analyst Agent",
+      "status": "pending_implementation"
+    },
+    "coordination_agent": {
+      "name": "Coordination Agent",
+      "status": "pending_implementation"
+    }
+  },
+  "true_north_principles": {
+    "alignment_with_mission": "Ensure all tasks align with organizational mission and values",
+    "customer_value_creation": "Prioritize actions that create value for customers",
+    "quality_and_excellence": "Maintain high quality standards in all deliverables",
+    "innovation_and_continuous_improvement": "Encourage innovation and continuous learning"
+  },
+  "task_priorities": {
+    "high": "Critical tasks requiring immediate attention",
+    "medium": "Standard tasks with normal timeline",
+    "low": "Tasks that can be deferred without impact"
+  },
+  "task_statuses": {
+    "pending": "Task created but not started",
+    "in_progress": "Task currently being executed",
+    "completed": "Task successfully finished",
+    "failed": "Task execution failed"
+  },
+  "learning": {
+    "pattern_recognition": {
+      "enabled": true,
+      "min_history_size": 5
+    },
+    "adaptive_delegation": {
+      "enabled": true,
+      "confidence_threshold": 0.7
+    }
+  }
+}
