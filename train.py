@@ -31,13 +31,13 @@ from prepare import MAX_SEQ_LEN, TIME_BUDGET, Tokenizer, make_dataloader, evalua
 
 @dataclass
 class GPTConfig:
-    sequence_len: int = 2048
-    vocab_size: int = 32768
-    n_layer: int = 12
-    n_head: int = 6
-    n_kv_head: int = 6
-    n_embd: int = 768
-    window_pattern: str = "SSSL"
+    sequence_len: int = 2048     # Must match MAX_SEQ_LEN from prepare.py
+    vocab_size: int = 8192      # Must match VOCAB_SIZE from prepare.py  
+    n_layer: int = 4           # Reduced from 12 for smaller GPU
+    n_head: int = 4           # Reduced from 6 for smaller GPU
+    n_kv_head: int = 4         # Reduced from 6 for smaller GPU
+    n_embd: int = 256          # Reduced from 768 for smaller GPU
+    window_pattern: str = "L"  # Changed from "SSSL" to "L" for efficiency
 
 
 def norm(x):
@@ -435,7 +435,7 @@ HEAD_DIM = 128          # target head dimension for attention
 WINDOW_PATTERN = "SSSL" # sliding window pattern: L=full, S=half context
 
 # Optimization
-TOTAL_BATCH_SIZE = 2**19 # ~524K tokens per optimizer step
+TOTAL_BATCH_SIZE = 2**17 # ~131K tokens per optimizer step (must be divisible by tokens_per_fwdbwd)
 EMBEDDING_LR = 0.6      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.04        # learning rate for matrix parameters (Muon)
@@ -447,8 +447,8 @@ WARMDOWN_RATIO = 0.5    # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.0     # final LR as fraction of initial
 
 # Model size
-DEPTH = 8               # number of transformer layers
-DEVICE_BATCH_SIZE = 128  # per-device batch size (reduce if OOM)
+DEPTH = 4               # number of transformer layers (reduced from 8 for smaller GPU)
+DEVICE_BATCH_SIZE = 32  # per-device batch size (reduced from 128 for smaller GPU)
 
 # ---------------------------------------------------------------------------
 # Setup: tokenizer, model, optimizer, dataloader
