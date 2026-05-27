@@ -37,7 +37,7 @@ class GPTConfig:
     n_head: int = 4           # Reduced from 6 for smaller GPU
     n_kv_head: int = 4         # Reduced from 6 for smaller GPU
     n_embd: int = 256          # Reduced from 768 for smaller GPU
-    window_pattern: str = "L"  # Changed from "SSSL" to "L" for efficiency
+    window_pattern: str = "SSSL"  # Changed from "L" to "SSSL" for gemma4:e4b
 
 
 def norm(x):
@@ -432,7 +432,7 @@ class MuonAdamW(torch.optim.Optimizer):
 # Model architecture
 ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
 HEAD_DIM = 128          # target head dimension for attention
-WINDOW_PATTERN = "SSSL" # sliding window pattern: L=full, S=half context
+WINDOW_PATTERN = "SSSL" # sliding window pattern: L=full, S=half context (gemma4:e4b optimized)
 
 # Optimization
 TOTAL_BATCH_SIZE = 2**17 # ~131K tokens per optimizer step (must be divisible by tokens_per_fwdbwd)
