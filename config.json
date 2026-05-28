@@ -27,25 +27,76 @@
     }
   },
   "specialized_agents": {
+    "content_agent": {
+      "name": "Content Agent",
+      "class": "ContentAgent",
+      "module": "agents.content_agent",
+      "model": "pitchdeck-2026:latest",
+      "api_provider": "ollama",
+      "parameters": {
+        "temperature": 0.7,
+        "num_predict": 2000
+      },
+      "capabilities": [
+        "pitch_deck_creation",
+        "content_improvement",
+        "2026_best_practices_integration"
+      ],
+      "status": "implemented"
+    },
     "research_agent": {
       "name": "Research Agent",
-      "status": "pending_implementation"
-    },
-    "development_agent": {
-      "name": "Development Agent",
-      "status": "pending_implementation"
-    },
-    "qa_agent": {
-      "name": "QA Agent",
-      "status": "pending_implementation"
+      "class": "ResearchAgent",
+      "module": "agents.research_agent",
+      "model": "qwen2.5:7b",
+      "api_provider": "ollama",
+      "parameters": {
+        "temperature": 0.6,
+        "num_predict": 1500
+      },
+      "capabilities": [
+        "market_research",
+        "competitor_analysis",
+        "trend_identification",
+        "customer_insights"
+      ],
+      "status": "implemented"
     },
     "analyst_agent": {
       "name": "Analyst Agent",
-      "status": "pending_implementation"
+      "class": "AnalystAgent",
+      "module": "agents.analyst_agent",
+      "model": "gemma4:e4b",
+      "api_provider": "ollama",
+      "parameters": {
+        "temperature": 0.4,
+        "num_predict": 1500
+      },
+      "capabilities": [
+        "quality_analysis",
+        "data_analysis",
+        "compliance_validation",
+        "qa_report_generation"
+      ],
+      "status": "implemented"
     },
-    "coordination_agent": {
-      "name": "Coordination Agent",
-      "status": "pending_implementation"
+    "design_agent": {
+      "name": "Design Agent",
+      "class": "DesignAgent",
+      "module": "agents.design_agent",
+      "model": "llama3.2:latest",
+      "api_provider": "ollama",
+      "parameters": {
+        "temperature": 0.8,
+        "num_predict": 2000
+      },
+      "capabilities": [
+        "visual_design",
+        "pdf_generation",
+        "accessibility_optimization",
+        "brand_guidelines"
+      ],
+      "status": "implemented"
     }
   },
   "true_north_principles": {
@@ -74,5 +125,39 @@
       "enabled": true,
       "confidence_threshold": 0.7
     }
+  },
+  "workflow": {
+    "agile_orchestrator": {
+      "class": "AgileOrchestrator",
+      "module": "workflow.agile_orchestrator",
+      "max_iterations": 3,
+      "quality_threshold": 0.8,
+      "phases": [
+        "initialization",
+        "research",
+        "content_creation",
+        "analysis",
+        "design",
+        "iteration",
+        "finalization"
+      ],
+      "state_management": {
+        "idle": "workflow_not_started",
+        "running": "workflow_in_progress",
+        "paused": "workflow_temporarily_suspended",
+        "completed": "workflow_finished_successfully",
+        "failed": "workflow_finished_with_errors"
+      }
+    }
+  },
+  "ollama": {
+    "base_url": "http://localhost:11434",
+    "timeout": 120,
+    "allowed_local_models": [
+      "pitchdeck-2026:latest",
+      "qwen2.5:7b",
+      "gemma4:e4b",
+      "llama3.2:latest"
+    ]
   }
 }
