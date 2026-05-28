@@ -1,0 +1,20 @@
+# WUPHF Agile Agent Network Dependencies
+
+# Core dependencies
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# Testing dependencies
+pytest>=9.0.0
+pytest-cov>=4.1.0
+
+# Optional: For enhanced functionality
+# ollama>=0.1.0  # Uncomment if you want to use the Ollama Python library
+# openai>=1.0.0  # Uncomment if you want to use OpenAI client for OpenRouter
+
+# Data processing
+# pandas>=2.0.0  # Optional: for advanced data analysis
+# numpy>=1.24.0  # Optional: for numerical operations
+
+# Logging
+# python-json-logger>=2.0.0  # Optional: for structured logging
