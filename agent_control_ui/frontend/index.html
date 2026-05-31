@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WUPHF Agent Control UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #16213e;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #0f3460;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: #e94560;
+        }
+
+        .header .status {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4cc9f0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #0f3460;
+            border-right: 2px solid #16213e;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            background: #16213e;
+            font-weight: bold;
+            border-bottom: 1px solid #0f3460;
+            margin: -1rem -1rem 1rem -1rem;
+        }
+
+        .agent-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .agent-item {
+            background: #1a1a2e;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .agent-item:hover {
+            border-color: #4cc9f0;
+            transform: translateX(5px);
+        }
+
+        .agent-item.active {
+            border-color: #e94560;
+            background: #16213e;
+        }
+
+        .agent-name {
+            font-weight: bold;
+            color: #4cc9f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .agent-model {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        .agent-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.idle { background: #4cc9f0; }
+        .status-dot.processing { background: #f9b208; animation: pulse 1s infinite; }
+        .status-dot.error { background: #e94560; }
+        .status-dot.initializing { background: #a0e7e5; animation: pulse 1s infinite; }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 1rem 2rem;
+            background: #16213e;
+            border-bottom: 2px solid #0f3460;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 1rem;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: #e94560;
+            color: white;
+        }
+
+        .message.agent {
+            align-self: flex-start;
+            background: #0f3460;
+            border: 2px solid #4cc9f0;
+        }
+
+        .message .sender {
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .message .timestamp {
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 0.5rem;
+        }
+
+        .input-area {
+            padding: 1rem 2rem;
+            background: #16213e;
+            border-top: 2px solid #0f3460;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            background: #1a1a2e;
+            color: #eee;
+            font-size: 1rem;
+        }
+
+        .input-area input:focus {
+            outline: none;
+            border-color: #4cc9f0;
+        }
+
+        .input-area button {
+            padding: 0.8rem 2rem;
+            background: #4cc9f0;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .input-area button:hover {
+            background: #3db5d6;
+        }
+
+        .workflow-panel {
+            width: 400px;
+            background: #0f3460;
+            border-left: 2px solid #16213e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .workflow-header {
+            padding: 1rem;
+            background: #16213e;
+            font-weight: bold;
+            border-bottom: 1px solid #0f3460;
+        }
+
+        .workflow-status {
+            padding: 1rem;
+            border-bottom: 1px solid #0f3460;
+        }
+
+        .workflow-phase {
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            background: #1a1a2e;
+            border-radius: 8px;
+            border-left: 4px solid #4cc9f0;
+        }
+
+        .workflow-phase.active {
+            border-left-color: #e94560;
+            background: #16213e;
+        }
+
+        .workflow-phase .phase-name {
+            font-weight: bold;
+            color: #4cc9f0;
+        }
+
+        .workflow-phase .phase-status {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .agent-activity {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .activity-item {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: #1a1a2e;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .activity-item .agent {
+            color: #4cc9f0;
+            font-weight: bold;
+        }
+
+        .activity-item .action {
+            color: #eee;
+        }
+
+        .activity-item .time {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #888;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .control-buttons button {
+            padding: 0.5rem 1rem;
+            background: #0f3460;
+            color: #4cc9f0;
+            border: 2px solid #4cc9f0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .control-buttons button:hover {
+            background: #4cc9f0;
+            color: #1a1a2e;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            background: #4cc9f0;
+            color: #1a1a2e;
+            border-radius: 8px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 WUPHF Agent Control UI</h1>
+        <div class="status">
+            <div class="status-indicator"></div>
+            <span>Connected</span>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-header">Agents</div>
+            <div class="agent-list" id="agentList">
+                <!-- Agents will be loaded here -->
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="content-header">
+                <h2 id="currentAgentName">Select an Agent</h2>
+                <div class="control-buttons">
+                    <button onclick="startWorkflow()">Start Workflow</button>
+                    <button onclick="getWorkflowStatus()">Status</button>
+                </div>
+            </div>
+            <div class="chat-container" id="chatContainer">
+                <div class="empty-state">
+                    <div class="icon">💬</div>
+                    <p>Select an agent to start chatting</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="workflow-panel">
+            <div class="workflow-header">Workflow Status</div>
+            <div class="workflow-status" id="workflowStatus">
+                <p>Workflow status will appear here</p>
+            </div>
+            <div class="workflow-header">Agent Activity</div>
+            <div class="agent-activity" id="agentActivity">
+                <!-- Agent activity will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedAgent = null;
+        let ws = null;
+        let messages = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM Content Loaded');
+            console.log('Starting initialization...');
+            loadAgents();
+            connectWebSocket();
+        });
+
+        async function loadAgents() {
+            try {
+                console.log('Loading agents...');
+                const response = await fetch('/api/agents');
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                const data = await response.json();
+                console.log('Agents data:', data);
+                
+                const agentList = document.getElementById('agentList');
+                console.log('Agent list element:', agentList);
+                
+                if (!agentList) {
+                    console.error('Agent list element not found!');
+                    return;
+                }
+                
+                agentList.innerHTML = '';
+                
+                if (!data.agents || data.agents.length === 0) {
+                    console.log('No agents in response');
+                    agentList.innerHTML = '<p style="color: #888; padding: 1rem;">No agents found</p>';
+                    return;
+                }
+                
+                console.log(`Found ${data.agents.length} agents`);
+                
+                data.agents.forEach((agent, index) => {
+                    console.log(`Adding agent ${index}:`, agent);
+                    const agentItem = document.createElement('div');
+                    agentItem.className = 'agent-item';
+                    agentItem.dataset.agentId = agent.id;
+                    agentItem.onclick = () => selectAgent(agent.id, agent.name);
+                    
+                    agentItem.innerHTML = `
+                        <div class="agent-name">${agent.name}</div>
+                        <div class="agent-model">${agent.model}</div>
+                        <div class="agent-status">
+                            <div class="status-dot idle" id="status-${agent.id}"></div>
+                            <span id="status-text-${agent.id}">Idle</span>
+                        </div>
+                    `;
+                    
+                    agentList.appendChild(agentItem);
+                    console.log(`Agent ${index} added to DOM`);
+                });
+                
+                console.log('Agents loaded successfully');
+            } catch (error) {
+                console.error('Failed to load agents:', error);
+                console.error('Error details:', error.message, error.stack);
+                const agentList = document.getElementById('agentList');
+                if (agentList) {
+                    agentList.innerHTML = `<p style="color: #e94560; padding: 1rem;">Error loading agents: ${error.message}</p>`;
+                }
+            }
+        }
+
+        function selectAgent(agentId, agentName) {
+            selectedAgent = agentId;
+            
+            // Update UI
+            document.querySelectorAll('.agent-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-agent-id="${agentId}"]`).classList.add('active');
+            
+            document.getElementById('currentAgentName').textContent = agentName;
+            
+            // Load chat history
+            loadChatHistory(agentId);
+        }
+
+        async function loadChatHistory(agentId) {
+            try {
+                const response = await fetch('/api/messages');
+                const data = await response.json();
+                
+                const agentMessages = data.messages.filter(m => m.agent === agentId);
+                displayMessages(agentMessages);
+            } catch (error) {
+                console.error('Failed to load messages:', error);
+            }
+        }
+
+        function displayMessages(msgs) {
+            const chatContainer = document.getElementById('chatContainer');
+            
+            if (msgs.length === 0) {
+                chatContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">💬</div>
+                        <p>No messages yet. Start a conversation!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            chatContainer.innerHTML = `
+                <div class="messages-area">
+                    ${msgs.map(msg => `
+                        <div class="message ${msg.direction === 'user_to_agent' ? 'user' : 'agent'}">
+                            <div class="sender">${msg.direction === 'user_to_agent' ? 'You' : selectedAgent}</div>
+                            <div>${msg.message}</div>
+                            <div class="timestamp">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="input-area">
+                    <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            `;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || !selectedAgent) return;
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        agent: selectedAgent,
+                        message: message,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                const result = await response.json();
+                input.value = '';
+                
+                // Reload messages
+                loadChatHistory(selectedAgent);
+            } catch (error) {
+                console.error('Failed to send message:', error);
+            }
+        }
+
+        function connectWebSocket() {
+            ws = new WebSocket('ws://localhost:8002/ws');
+            
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+            
+            ws.onclose = () => {
+                console.log('WebSocket disconnected, reconnecting...');
+                setTimeout(connectWebSocket, 3000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'initial_state':
+                    // Initialize agent states
+                    if (data.agents) {
+                        Object.keys(data.agents).forEach(agentId => {
+                            updateAgentStatus(agentId, data.agents[agentId]);
+                        });
+                    }
+                    if (data.messages) {
+                        if (selectedAgent) {
+                            const agentMessages = data.messages.filter(m => m.agent === selectedAgent);
+                            displayMessages(agentMessages);
+                        }
+                    }
+                    break;
+                    
+                case 'chat':
+                    // New chat message
+                    if (data.agent === selectedAgent) {
+                        loadChatHistory(selectedAgent);
+                    }
+                    addActivityItem(data.agent, `Chat: ${data.message.substring(0, 50)}...`);
+                    break;
+                    
+                case 'workflow_starting':
+                    showNotification('Workflow starting...');
+                    updateWorkflowStatus('Starting workflow');
+                    break;
+                    
+                case 'workflow_completed':
+                    showNotification('Workflow completed!');
+                    updateWorkflowStatus('Completed');
+                    break;
+                    
+                case 'workflow_error':
+                    showNotification('Workflow error: ' + data.error);
+                    updateWorkflowStatus('Error: ' + data.error);
+                    break;
+            }
+        }
+
+        function updateAgentStatus(agentId, state) {
+            const statusDot = document.getElementById(`status-${agentId}`);
+            const statusText = document.getElementById(`status-text-${agentId}`);
+            
+            if (statusDot && statusText) {
+                statusDot.className = `status-dot ${state.status}`;
+                statusText.textContent = state.status.charAt(0).toUpperCase() + state.status.slice(1);
+            }
+        }
+
+        function updateWorkflowStatus(status) {
+            document.getElementById('workflowStatus').innerHTML = `<p>${status}</p>`;
+        }
+
+        function addActivityItem(agent, action) {
+            const activityArea = document.getElementById('agentActivity');
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <div class="agent">${agent}</div>
+                <div class="action">${action}</div>
+                <div class="time">${new Date().toLocaleTimeString()}</div>
+            `;
+            activityArea.insertBefore(item, activityArea.firstChild);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        async function startWorkflow() {
+            const customerRequest = {
+                customer_id: "demo_123",
+                request_type: "pitch_deck",
+                topic: "AI-powered productivity tool",
+                target_audience: "investors",
+                requirements: {
+                    style: "modern minimalist",
+                    length: "10-12 slides"
+                }
+            };
+            
+            try {
+                const response = await fetch('/api/workflow/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        customer_request: customerRequest,
+                        quality_threshold: 0.8
+                    })
+                });
+                
+                const result = await response.json();
+                console.log('Workflow started:', result);
+            } catch (error) {
+                console.error('Failed to start workflow:', error);
+            }
+        }
+
+        async function getWorkflowStatus() {
+            try {
+                const response = await fetch('/api/workflow/status');
+                const status = await response.json();
+                console.log('Workflow status:', status);
+                updateWorkflowStatus(JSON.stringify(status, null, 2));
+            } catch (error) {
+                console.error('Failed to get workflow status:', error);
+            }
+        }
+    </script>
+</body>
+</html>

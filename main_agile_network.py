@@ -70,14 +70,16 @@ class WUPHFAgileNetwork:
             ceo_config.get("environment_variables", {}).get("openrouter_api_key", "")
         )
         
-        # Only initialize CEO agent if API key is available
-        if openrouter_api_key:
+        # Only initialize CEO agent if API key is available and not empty
+        if openrouter_api_key and openrouter_api_key.strip():
+            print(f"=== DIAGNOSTIC: Using real CEO agent with OpenRouter API ===")
             agents["ceo"] = CEOOrchestratorAgent(
                 openrouter_api_key=openrouter_api_key,
                 model=ceo_config.get("model", "nvidia/nemotron-120b"),
                 api_url=ceo_config.get("api_url", "https://openrouter.ai/api/v1/chat/completions")
             )
         else:
+            print(f"=== DIAGNOSTIC: Using Mock CEO agent (no API key) ===")
             # Create a mock CEO agent for testing without API key
             agents["ceo"] = MockCEOAgent()
         
@@ -160,22 +162,34 @@ class WUPHFAgileNetwork:
         Returns:
             Dictionary containing workflow results
         """
+        print(f"=== DIAGNOSTIC [main_agile_network]: process_customer_request called ===")
+        print(f"Input customer_request type: {type(customer_request)}")
+        print(f"Input customer_request: {customer_request}")
+        print(f"Input quality_threshold: {quality_threshold}")
+        
         # Get quality threshold from config if not provided
         if quality_threshold is None:
             workflow_config = self.config.get("workflow", {})
             agile_config = workflow_config.get("agile_orchestrator", {})
             quality_threshold = agile_config.get("quality_threshold", 0.8)
+            print(f"=== DIAGNOSTIC: Quality threshold from config: {quality_threshold} ===")
         
         # Log the request to memory
         self._log_request(customer_request)
         
         try:
+            print(f"=== DIAGNOSTIC: Calling orchestrator.execute_full_workflow ===")
             # Execute full workflow
             result = self.orchestrator.execute_full_workflow(
                 customer_request=customer_request,
                 checklist=self.true_north_checklist,
                 quality_threshold=quality_threshold
             )
+            
+            print(f"=== DIAGNOSTIC: Workflow result received ===")
+            print(f"Result type: {type(result)}")
+            print(f"Result success: {result.success}")
+            print(f"Result errors: {result.errors}")
             
             # Log the result to memory
             self._log_result(customer_request, result)
@@ -195,6 +209,12 @@ class WUPHFAgileNetwork:
             }
             
         except Exception as e:
+            print(f"=== DIAGNOSTIC [main_agile_network]: Exception in process_customer_request ===")
+            print(f"Error type: {type(e)}")
+            print(f"Error message: {str(e)}")
+            import traceback
+            print(f"Traceback: {traceback.format_exc()}")
+            
             # Log failure to memory
             self._log_failure(customer_request, str(e))
             
@@ -300,10 +320,16 @@ class MockCEOAgent:
     def __init__(self):
         self.model = "mock_ceo"
     
-    def analyze_customer_request(self, request: str, context: str = None) -> Dict[str, Any]:
+    def analyze_customer_request(self, request: Dict[str, Any], context: str = None) -> Dict[str, Any]:
         """Mock customer request analysis"""
+        # Handle both string and dict inputs
+        if isinstance(request, str):
+            request_type = "pitch_deck"
+        else:
+            request_type = request.get("request_type", "pitch_deck")
+        
         return {
-            "task_type": "pitch_deck",
+            "task_type": request_type,
             "priority": "medium",
             "requirements": {
                 "style": "modern",

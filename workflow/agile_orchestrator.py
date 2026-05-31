@@ -315,80 +315,122 @@ class AgileOrchestrator:
         quality_threshold: float = 0.8
     ) -> WorkflowResult:
         """Execute complete agile workflow"""
+        print(f"=== DIAGNOSTIC [agile_orchestrator]: execute_full_workflow called ===")
+        print(f"Input customer_request: {customer_request}")
+        print(f"Input checklist: {checklist}")
+        print(f"Input quality_threshold: {quality_threshold}")
+        
         try:
             # Initialize
+            print(f"=== DIAGNOSTIC: Phase 1 - Initialize workflow ===")
             init_result = self.initialize_workflow(customer_request)
+            print(f"Init result: {init_result}")
             if not init_result["success"]:
+                print(f"=== DIAGNOSTIC: Initialization failed ===")
                 return WorkflowResult(success=False, errors=[init_result["error"]])
             
             # CEO analysis
+            print(f"=== DIAGNOSTIC: Phase 2 - CEO analysis ===")
             ceo_agent = self.agents.get("ceo")
             if ceo_agent:
+                print(f"=== DIAGNOSTIC: Calling CEO agent.analyze_customer_request ===")
+                print(f"Input to CEO: {customer_request}")
                 ceo_analysis = ceo_agent.analyze_customer_request(customer_request)
-                customer_request.update(ceo_analysis.get("requirements", {}))
+                print(f"CEO analysis result: {ceo_analysis}")
+                requirements = ceo_analysis.get("requirements", {})
+                print(f"Requirements from CEO: {requirements}")
+                if requirements and isinstance(requirements, dict):
+                    customer_request.update(requirements)
+                    print(f"Updated customer_request: {customer_request}")
             
             # Research phase
+            print(f"=== DIAGNOSTIC: Phase 3 - Research ===")
+            query = customer_request.get("topic", "")
+            focus_areas = customer_request.get("requirements", {}).get("focus", ["market", "competitors"])
+            print(f"Research query: {query}")
+            print(f"Research focus_areas: {focus_areas}")
+            
             research_result = self.execute_research_phase(
-                query=customer_request.get("topic", ""),
-                focus_areas=customer_request.get("requirements", {}).get("focus", ["market", "competitors"])
+                query=query,
+                focus_areas=focus_areas
             )
+            print(f"Research result: {research_result}")
             if not research_result["success"]:
+                print(f"=== DIAGNOSTIC: Research phase failed ===")
                 return WorkflowResult(success=False, errors=[research_result["error"]])
             
             # Content creation
+            print(f"=== DIAGNOSTIC: Phase 4 - Content creation ===")
             content_result = self.execute_content_phase(
                 research_data=research_result["research_data"],
                 requirements=customer_request.get("requirements", {})
             )
+            print(f"Content result: {content_result}")
             if not content_result["success"]:
+                print(f"=== DIAGNOSTIC: Content phase failed ===")
                 return WorkflowResult(success=False, errors=[content_result["error"]])
             
             current_pitch_deck = content_result["pitch_deck"]
+            print(f"Current pitch deck: {current_pitch_deck}")
             
             # Analysis and iteration loop
+            print(f"=== DIAGNOSTIC: Phase 5 - Analysis and iteration ===")
             for iteration in range(self.max_iterations + 1):
+                print(f"=== DIAGNOSTIC: Iteration {iteration} ===")
                 analysis_result = self.execute_analysis_phase(
                     pitch_deck=current_pitch_deck,
                     checklist=checklist,
                     threshold=quality_threshold
                 )
+                print(f"Analysis result: {analysis_result}")
                 
                 if not analysis_result["success"]:
+                    print(f"=== DIAGNOSTIC: Analysis phase failed ===")
                     return WorkflowResult(success=False, errors=[analysis_result["error"]])
                 
                 if analysis_result["passes_threshold"]:
+                    print(f"=== DIAGNOSTIC: Quality threshold passed ===")
                     break
                 
                 if iteration < self.max_iterations:
-                    feedback = analysis_result["analysis_result"].improvement_suggestions
+                    analysis_data = analysis_result.get("analysis_result", {})
+                    feedback = analysis_data.improvement_suggestions if hasattr(analysis_data, 'improvement_suggestions') else []
+                    print(f"=== DIAGNOSTIC: Starting iteration cycle with feedback: {feedback} ===")
                     iteration_result = self.execute_iteration_cycle(
                         pitch_deck=current_pitch_deck,
                         feedback=feedback,
                         checklist=checklist,
                         threshold=quality_threshold
                     )
+                    print(f"Iteration result: {iteration_result}")
                     
                     if iteration_result["success"]:
                         current_pitch_deck = iteration_result["improved_pitch_deck"]
                     else:
+                        print(f"=== DIAGNOSTIC: Iteration cycle failed ===")
                         break
             
             # Design phase
+            print(f"=== DIAGNOSTIC: Phase 6 - Design ===")
             design_result = self.execute_design_phase(
                 pitch_deck=current_pitch_deck,
                 requirements=customer_request.get("requirements", {})
             )
+            print(f"Design result: {design_result}")
             
             # Final CEO evaluation
+            print(f"=== DIAGNOSTIC: Phase 7 - Final CEO evaluation ===")
             final_score = 0.0
             if ceo_agent:
                 ceo_evaluation = ceo_agent.evaluate_true_north_compliance(
                     content=current_pitch_deck,
                     checklist=checklist
                 )
+                print(f"CEO evaluation: {ceo_evaluation}")
                 final_score = ceo_evaluation.get("score", 0.0)
             
             # Complete workflow
+            print(f"=== DIAGNOSTIC: Phase 8 - Finalization ===")
             self.state = WorkflowState.COMPLETED
             self.current_phase = WorkflowPhase.FINALIZATION
             
@@ -400,6 +442,7 @@ class AgileOrchestrator:
                 "final_score": final_score
             })
             
+            print(f"=== DIAGNOSTIC: Workflow completed successfully ===")
             return WorkflowResult(
                 success=True,
                 final_pitch_deck=current_pitch_deck,

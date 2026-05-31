@@ -444,8 +444,20 @@ class LearningMemory:
         common_metadata = {}
         for key in all_keys:
             values = [entry.metadata.get(key) for entry in entries if key in entry.metadata]
-            if values and len(set(values)) == 1:
-                common_metadata[key] = values[0]
+            
+            # Skip if no values
+            if not values:
+                continue
+            
+            # Check if all values are the same (handle non-hashable types)
+            try:
+                # Try to use set for hashable types
+                if len(set(values)) == 1:
+                    common_metadata[key] = values[0]
+            except TypeError:
+                # For non-hashable types (like dicts), compare directly
+                if all(v == values[0] for v in values):
+                    common_metadata[key] = values[0]
         
         return common_metadata
     
