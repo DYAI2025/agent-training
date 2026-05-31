@@ -18,6 +18,10 @@ dependencies = [
     "rustbpe>=0.1.0",
     "tiktoken>=0.11.0",
     "torch==2.9.1",
+    "python-dotenv>=1.0.0",
+    "fastapi>=0.136.3",
+    "uvicorn>=0.48.0",
+    "websockets>=16.0",
 ]
 
 [tool.uv.sources]
@@ -34,6 +38,9 @@ explicit = true
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+]
+agile-network = [
+    "python-dotenv>=1.0.0",
 ]
 
 [tool.pytest.ini_options]

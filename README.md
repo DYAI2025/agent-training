@@ -60,6 +60,25 @@ autoresearch can be integrated with the WUPHF Learning System for enhanced auton
 
 See [README_WUPHF_INTEGRATION.md](README_WUPHF_INTEGRATION.md) for details and [program_wuphf_enhanced.md](program_wuphf_enhanced.md) for the enhanced agent instructions.
 
+## WUPHF Agile Agent Network
+
+This repository also includes a complete implementation of the WUPHF Agile Agent Network - an autonomous multi-agent system for creating professional pitch decks. The system coordinates specialized AI agents that work together like an agile team:
+
+- **CEO/Orchestrator Agent** (Nemotron120B): Strategic leadership and task delegation
+- **Content Agent** (pitchdeck-2026): Pitch deck creation with 2026 best practices
+- **Research Agent** (qwen2.5:7b): Market research and competitive analysis
+- **Analyst Agent** (gemma4:e4b): Quality assurance and data analysis
+- **Design Agent** (llama3.2:latest): Visual design and PDF generation
+
+The system features:
+- Agile workflow orchestration with iteration cycles
+- Learning memory for continuous improvement
+- True North quality standards compliance
+- Pattern recognition and insight generation
+- Comprehensive testing and documentation
+
+See [README_AGILE_NETWORK.md](README_AGILE_NETWORK.md) for complete documentation on the WUPHF Agile Agent Network.
+
 ## Project structure
 
 ```

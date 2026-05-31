@@ -1,0 +1,27 @@
+[
+  {
+    "pattern_id": "495ee63a-ac63-4818-8e9c-0f70397b4b18",
+    "pattern_type": "failure_pattern",
+    "description": "Common factors in failures: ['customer_request', 'error', 'iterations', 'duration']",
+    "confidence": 0.7,
+    "occurrences": 8,
+    "discovered_at": "2026-05-29T22:19:01.675997",
+    "metadata": {
+      "common_factors": {
+        "customer_request": {
+          "customer_id": "demo_123",
+          "request_type": "pitch_deck",
+          "topic": "AI-powered productivity tool",
+          "target_audience": "investors",
+          "requirements": {
+            "style": "modern minimalist",
+            "length": "10-12 slides"
+          }
+        },
+        "error": "unhashable type: 'dict'",
+        "iterations": 0,
+        "duration": null
+      }
+    }
+  }
+]
